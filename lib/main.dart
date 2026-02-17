@@ -39,16 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isConnected = false;
   bool _isScanning = false;
 
-  // SpO2 + 脈搏
   int? _spo2;
   int? _pulseRate;
-
-  // 血壓
   int? _systolic;
   int? _diastolic;
   int? _meanArterial;
-
-  // 體溫
   double? _temperature;
   String _tempUnit = 'C';
 
@@ -111,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (devices.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('找不到 WACSM 設備，請確認設備已開機'),
+            content: const Text('No WACSM device found. Please make sure the device is on.'),
             backgroundColor: Colors.orange.shade400,
           ),
         );
@@ -130,12 +125,12 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                '選擇設備',
+                'Select Device',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 4),
               Text(
-                '找到 ${devices.length} 台設備',
+                '${devices.length} device(s) found',
                 style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
               ),
               const SizedBox(height: 16),
@@ -189,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('錯誤：$e'),
+            content: Text('Error: $e'),
             backgroundColor: Colors.red.shade400,
           ),
         );
@@ -228,11 +223,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 連線狀態
               _StatusCard(isConnected: _isConnected),
               const SizedBox(height: 20),
 
-              // SpO2 + 脈搏
               Row(
                 children: [
                   Expanded(
@@ -247,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: _MetricCard(
-                      label: '脈搏',
+                      label: 'Pulse Rate',
                       value: _pulseRate?.toString() ?? '--',
                       unit: 'bpm',
                       icon: Icons.favorite,
@@ -258,7 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16),
 
-              // 血壓
               _BpCard(
                 systolic: _systolic,
                 diastolic: _diastolic,
@@ -266,9 +258,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16),
 
-              // 體溫
               _MetricCard(
-                label: '體溫',
+                label: 'Temperature',
                 value: _temperature != null
                     ? _temperature!.toStringAsFixed(1)
                     : '--',
@@ -278,12 +269,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 32),
 
-              // 按鈕
               _isConnected
                   ? OutlinedButton.icon(
                       onPressed: _handleDisconnect,
                       icon: const Icon(Icons.bluetooth_disabled),
-                      label: const Text('斷開連線'),
+                      label: const Text('Disconnect'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red.shade400,
                         side: BorderSide(color: Colors.red.shade300),
@@ -305,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             )
                           : const Icon(Icons.bluetooth_searching),
-                      label: Text(_isScanning ? '掃描中...' : '掃描並連線'),
+                      label: Text(_isScanning ? 'Scanning...' : 'Scan & Connect'),
                       style: FilledButton.styleFrom(
                         backgroundColor: const Color(0xFF2196F3),
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -322,8 +312,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
               Text(
                 _isConnected
-                    ? '設備已連線，請在 Connex Spot Monitor 上進行測量'
-                    : '請確保設備已開機並在藍牙範圍內',
+                    ? 'Device connected. Please perform a measurement on the Connex Spot Monitor.'
+                    : 'Please make sure the device is powered on and within Bluetooth range.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
               ),
@@ -335,7 +325,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ── 連線狀態卡片 ──────────────────────────────────
 class _StatusCard extends StatelessWidget {
   final bool isConnected;
   const _StatusCard({required this.isConnected});
@@ -378,7 +367,7 @@ class _StatusCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            isConnected ? '已連線' : '未連線',
+            isConnected ? 'Connected' : 'Not Connected',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 15,
@@ -401,7 +390,6 @@ class _StatusCard extends StatelessWidget {
   }
 }
 
-// ── 單一數值卡片 ──────────────────────────────────
 class _MetricCard extends StatelessWidget {
   final String label;
   final String value;
@@ -475,7 +463,6 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-// ── 血壓卡片 ──────────────────────────────────────
 class _BpCard extends StatelessWidget {
   final int? systolic;
   final int? diastolic;
@@ -511,7 +498,7 @@ class _BpCard extends StatelessWidget {
                   size: 18, color: Color(0xFF9C27B0)),
               const SizedBox(width: 6),
               Text(
-                '血壓',
+                'Blood Pressure',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -532,7 +519,7 @@ class _BpCard extends StatelessWidget {
           Row(
             children: [
               _BpValue(
-                label: '收縮壓',
+                label: 'Systolic',
                 value: systolic?.toString() ?? '--',
                 color: const Color(0xFF9C27B0),
               ),
@@ -543,7 +530,7 @@ class _BpCard extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 16),
               ),
               _BpValue(
-                label: '舒張壓',
+                label: 'Diastolic',
                 value: diastolic?.toString() ?? '--',
                 color: const Color(0xFF7B1FA2),
               ),
@@ -554,7 +541,7 @@ class _BpCard extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 16),
               ),
               _BpValue(
-                label: '平均壓',
+                label: 'Mean',
                 value: meanArterial?.toString() ?? '--',
                 color: Colors.grey.shade500,
               ),
